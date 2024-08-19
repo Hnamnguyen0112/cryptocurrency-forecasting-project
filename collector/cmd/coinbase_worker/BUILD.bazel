@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "coinbase_worker_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector/cmd/coinbase_worker",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//collector/config",
+        "//collector/pkg/database",
+        "@com_github_gofiber_fiber_v2//:fiber",
+    ],
+)
+
+go_binary(
+    name = "coinbase_worker",
+    embed = [":coinbase_worker_lib"],
+    visibility = ["//visibility:public"],
+)

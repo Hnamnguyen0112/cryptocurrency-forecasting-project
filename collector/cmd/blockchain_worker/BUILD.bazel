@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "blockchain_worker_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector/cmd/blockchain_worker",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//collector/config",
+        "//collector/pkg/database",
+        "@com_github_gofiber_fiber_v2//:fiber",
+    ],
+)
+
+go_binary(
+    name = "blockchain_worker",
+    embed = [":blockchain_worker_lib"],
+    visibility = ["//visibility:public"],
+)
