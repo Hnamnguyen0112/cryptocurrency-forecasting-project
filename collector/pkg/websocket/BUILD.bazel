@@ -1,0 +1,9 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "websocket",
+    srcs = ["websocket.go"],
+    importpath = "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector/pkg/websocket",
+    visibility = ["//visibility:public"],
+    deps = ["@com_github_gorilla_websocket//:websocket"],
+)

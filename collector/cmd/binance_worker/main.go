@@ -2,11 +2,13 @@ package main
 
 import (
 	"log"
+	"net/url"
 	"time"
 
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector/config"
+	binanceworker "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector/internal/binance_worker"
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector/pkg/database"
-	"github.com/gofiber/fiber/v2"
+	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector/pkg/websocket"
 )
 
 const idleTimeout = 5 * time.Second
@@ -28,15 +30,31 @@ func main() {
 
   database.Connect(connectParams)
 
-	app := fiber.New(fiber.Config{
-		ReadBufferSize: 4096 * 2,
-		Prefork:        true,
-		IdleTimeout:    idleTimeout,
-	})
+	u := url.URL{
+		Scheme: "wss",
+		Host:   "fstream.binance.com",
+		Path:   "/ws",
+	}
+	log.Printf("Connecting to %s", u.String())
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
+	ws := websocket.Connect(u.String()) 
+	defer ws.Conn.Close()
 
-	log.Fatal(app.Listen(":3001"))
+  request := binanceworker.Request{
+    Method: "SUBSCRIBE",
+    Params: []string{"btcusdt@markPrice"},
+    ID: 1,
+  }
+
+  err := ws.Conn.WriteJSON(request)
+  if err != nil {
+    log.Fatal("Write error:", err)
+  }
+
+  go func() { 
+    defer close(ws.Done)
+    ws.Listen()
+  }()
+
+  ws.HandleInterrupt()	
 }

@@ -7,8 +7,9 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//collector/config",
+        "//collector/internal/binance_worker",
         "//collector/pkg/database",
-        "@com_github_gofiber_fiber_v2//:fiber",
+        "//collector/pkg/websocket",
     ],
 )
 
