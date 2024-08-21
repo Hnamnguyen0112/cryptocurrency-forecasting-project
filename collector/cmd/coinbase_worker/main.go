@@ -42,8 +42,8 @@ func main() {
 
   request := coinbaseworker.Request{
     Type: "subscribe",
-    ProductIds: []string{"ETH-USD"},
-    Channels: []string{"level2"},
+    ProductIds: []string{"BTC-USDT"},
+    Channel: "ticker",
   }
 
   err := ws.Conn.WriteJSON(request)

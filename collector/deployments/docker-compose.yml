@@ -8,21 +8,10 @@ services:
       - POSTGRES_PASSWORD=secret
       - POSTGRES_DB=binance
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - binance_data:/var/lib/postgresql/data
   
-  blockchain_postgres_db:
-    image: postgres:16.2
-    environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=secret
-      - POSTGRES_DB=blockchain
-    ports:
-      - "5433:5432"
-    volumes:
-      - blockchain_data:/var/lib/postgresql/data
-
   coinbase_postgres_db:
     image: postgres:16.2
     environment:
@@ -36,5 +25,4 @@ services:
 
 volumes:
   binance_data:
-  blockchain_data:
   coinbase_data:

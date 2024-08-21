@@ -1,8 +1,0 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
-
-go_library(
-    name = "blockchain_worker",
-    srcs = ["request.go"],
-    importpath = "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector/internal/blockchain_worker",
-    visibility = ["//collector:__subpackages__"],
-)

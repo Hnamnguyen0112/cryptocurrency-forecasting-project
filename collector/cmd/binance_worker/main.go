@@ -8,6 +8,7 @@ import (
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector/config"
 	binanceworker "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector/internal/binance_worker"
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector/pkg/database"
+	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector/pkg/entities"
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector/pkg/websocket"
 )
 
@@ -30,6 +31,8 @@ func main() {
 
   database.Connect(connectParams)
 
+  database.DB.AutoMigrate(&entities.BinanceTicker{},&entities.BinanceCandlestick{})
+
 	u := url.URL{
 		Scheme: "wss",
 		Host:   "fstream.binance.com",
@@ -40,20 +43,14 @@ func main() {
 	ws := websocket.Connect(u.String()) 
 	defer ws.Conn.Close()
 
-  request := binanceworker.Request{
-    Method: "SUBSCRIBE",
-    Params: []string{"btcusdt@markPrice"},
-    ID: 1,
-  }
+  svc := binanceworker.NewService(ws)
 
-  err := ws.Conn.WriteJSON(request)
-  if err != nil {
-    log.Fatal("Write error:", err)
-  }
+  svc.Subcribe("btcusdt", "ticker") 
+  svc.Subcribe("btcusdt", "kline_1m")
 
   go func() { 
     defer close(ws.Done)
-    ws.Listen()
+    svc.Listen()
   }()
 
   ws.HandleInterrupt()	
