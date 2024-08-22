@@ -11,7 +11,6 @@ import (
 
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/config"
 	coinbaseworker "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/internal/coinbase_worker"
-	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/database"
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/kafka"
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/websocket"
 )
@@ -21,22 +20,6 @@ const idleTimeout = 5 * time.Second
 func main() {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
-
-	dbUser := config.Config("COINBASE_DB_USER")
-	dbPassword := config.Config("COINBASE_DB_PASSWORD")
-	dbHost := config.Config("COINBASE_DB_HOST")
-	dbPort := config.Config("COINBASE_DB_PORT")
-	dbName := config.Config("COINBASE_DB_NAME")
-
-	connectParams := database.ConnectParams{
-		Host:     dbHost,
-		Port:     dbPort,
-		User:     dbUser,
-		Password: dbPassword,
-		Name:     dbName,
-	}
-
-	database.Connect(connectParams)
 
 	u := url.URL{
 		Scheme: "wss",

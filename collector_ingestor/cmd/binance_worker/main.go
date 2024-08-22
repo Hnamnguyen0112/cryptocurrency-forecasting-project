@@ -11,8 +11,6 @@ import (
 
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/config"
 	binanceworker "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/internal/binance_worker"
-	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/database"
-	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/entities"
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/kafka"
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/websocket"
 )
@@ -22,24 +20,6 @@ const idleTimeout = 5 * time.Second
 func main() {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
-
-	dbUser := config.Config("BINANCE_DB_USER")
-	dbPassword := config.Config("BINANCE_DB_PASSWORD")
-	dbHost := config.Config("BINANCE_DB_HOST")
-	dbPort := config.Config("BINANCE_DB_PORT")
-	dbName := config.Config("BINANCE_DB_NAME")
-
-	connectParams := database.ConnectParams{
-		Host:     dbHost,
-		Port:     dbPort,
-		User:     dbUser,
-		Password: dbPassword,
-		Name:     dbName,
-	}
-
-	database.Connect(connectParams)
-
-	database.DB.AutoMigrate(&entities.BinanceTicker{}, &entities.BinanceCandlestick{})
 
 	u := url.URL{
 		Scheme: "wss",
