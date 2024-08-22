@@ -12,8 +12,8 @@ type KafkaProducer struct {
 	Interrupt chan os.Signal
 }
 
-func NewKafkaProducer(interrupt chan os.Signal) *KafkaProducer {
-	p, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": "localhost:29092"})
+func NewKafkaProducer(address string, interrupt chan os.Signal) *KafkaProducer {
+	p, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": address})
 	if err != nil {
 		panic(err)
 	}

@@ -34,17 +34,6 @@ func (ws *Websocket) Subscribe(request map[string]interface{}) {
 	}
 }
 
-func (ws *Websocket) Listen() {
-	for {
-		_, message, err := ws.Conn.ReadMessage()
-		if err != nil {
-			log.Println("Read error:", err)
-			return
-		}
-		log.Printf("Received: %s", message)
-	}
-}
-
 func (ws *Websocket) HandleInterrupt() {
 	for {
 		select {

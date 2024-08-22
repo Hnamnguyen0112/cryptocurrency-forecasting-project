@@ -8,7 +8,7 @@ import (
 )
 
 func Config(key string) string {
-	err := godotenv.Load("collector/.env")
+	err := godotenv.Load("collector_ingestor/.env")
 	if err != nil {
 		fmt.Print("Error loading .env file")
 	}

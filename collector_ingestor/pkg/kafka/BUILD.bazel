@@ -6,7 +6,7 @@ go_library(
         "consumer.go",
         "producer.go",
     ],
-    importpath = "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector/pkg/kafka",
+    importpath = "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/kafka",
     visibility = ["//visibility:public"],
     deps = ["@com_github_confluentinc_confluent_kafka_go_v2//kafka"],
 )

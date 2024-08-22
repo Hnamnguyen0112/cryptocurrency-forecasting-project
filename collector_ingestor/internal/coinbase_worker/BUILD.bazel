@@ -1,0 +1,8 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "coinbase_worker",
+    srcs = ["response.go"],
+    importpath = "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/internal/coinbase_worker",
+    visibility = ["//collector_ingestor:__subpackages__"],
+)
