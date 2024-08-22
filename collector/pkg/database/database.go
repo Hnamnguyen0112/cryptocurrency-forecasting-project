@@ -9,15 +9,14 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-
 )
 
 type ConnectParams struct {
-  Host     string
-  User     string
-  Password string
-  Name     string
-  Port     string
+	Host     string
+	User     string
+	Password string
+	Name     string
+	Port     string
 }
 
 var DB *gorm.DB

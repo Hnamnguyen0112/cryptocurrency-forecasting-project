@@ -3,10 +3,12 @@ package main
 import (
 	"log"
 	"net/url"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector/config"
-	coinbaseworker "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector/internal/coinbase_worker"
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector/pkg/database"
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector/pkg/websocket"
 )
@@ -14,21 +16,24 @@ import (
 const idleTimeout = 5 * time.Second
 
 func main() {
-  dbUser := config.Config("COINBASE_DB_USER")
+	interrupt := make(chan os.Signal, 1)
+	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
+
+	dbUser := config.Config("COINBASE_DB_USER")
 	dbPassword := config.Config("COINBASE_DB_PASSWORD")
 	dbHost := config.Config("COINBASE_DB_HOST")
 	dbPort := config.Config("COINBASE_DB_PORT")
 	dbName := config.Config("COINBASE_DB_NAME")
 
-  connectParams := database.ConnectParams{
-    Host:     dbHost,
-    Port:     dbPort,
-    User:     dbUser,
-    Password: dbPassword,
-    Name:   dbName,
-  }
+	connectParams := database.ConnectParams{
+		Host:     dbHost,
+		Port:     dbPort,
+		User:     dbUser,
+		Password: dbPassword,
+		Name:     dbName,
+	}
 
-  database.Connect(connectParams)
+	database.Connect(connectParams)
 
 	u := url.URL{
 		Scheme: "wss",
@@ -37,24 +42,24 @@ func main() {
 	}
 	log.Printf("Connecting to %s", u.String())
 
-	ws := websocket.Connect(u.String()) 
+	ws := websocket.Connect(u.String(), interrupt)
 	defer ws.Conn.Close()
 
-  request := coinbaseworker.Request{
-    Type: "subscribe",
-    ProductIds: []string{"BTC-USDT"},
-    Channel: "ticker",
-  }
+	request := map[string]interface{}{
+		"type":        "subscribe",
+		"product_ids": []string{"BTC-USDT"},
+		"channel":     "ticker",
+	}
 
-  err := ws.Conn.WriteJSON(request)
-  if err != nil {
-    log.Fatal("Write error:", err)
-  }
+	err := ws.Conn.WriteJSON(request)
+	if err != nil {
+		log.Fatal("Write error:", err)
+	}
 
-  go func() { 
-    defer close(ws.Done)
-    ws.Listen()
-  }()
+	go func() {
+		defer close(ws.Done)
+		ws.Listen()
+	}()
 
-  ws.HandleInterrupt()
+	ws.HandleInterrupt()
 }

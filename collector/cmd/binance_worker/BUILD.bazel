@@ -10,6 +10,7 @@ go_library(
         "//collector/internal/binance_worker",
         "//collector/pkg/database",
         "//collector/pkg/entities",
+        "//collector/pkg/kafka",
         "//collector/pkg/websocket",
     ],
 )
