@@ -1,4 +1,4 @@
-package coinbaseworker
+package coinbasecollector
 
 type CoinbaseCommon struct {
 	Channel     string          `json:"channel"`

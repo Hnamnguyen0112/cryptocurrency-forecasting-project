@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/config"
-	binanceworker "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/internal/binance_worker"
+	coinbasecollector "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/internal/coinbase_collector"
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/kafka"
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/websocket"
 )
@@ -23,8 +23,8 @@ func main() {
 
 	u := url.URL{
 		Scheme: "wss",
-		Host:   "fstream.binance.com",
-		Path:   "/ws",
+		Host:   "advanced-trade-ws.coinbase.com",
+		Path:   "/",
 	}
 	log.Printf("Connecting to %s", u.String())
 
@@ -34,13 +34,19 @@ func main() {
 	kafkaProducer := kafka.NewKafkaProducer(config.Config("KAFKA_BOOTSTRAP_SERVERS"), interrupt)
 	defer kafkaProducer.Close()
 
-	request := map[string]interface{}{
-		"method": "SUBSCRIBE",
-		"params": []string{"btcusdt@ticker", "btcusdt@kline_1m"},
-		"id":     1,
+	tickerRequest := map[string]interface{}{
+		"type":        "subscribe",
+		"product_ids": []string{"BTC-USDT"},
+		"channel":     "ticker",
 	}
+	ws.Subscribe(tickerRequest)
 
-	ws.Subscribe(request)
+	candlesRequest := map[string]interface{}{
+		"type":        "subscribe",
+		"product_ids": []string{"BTC-USDT"},
+		"channel":     "candles",
+	}
+	ws.Subscribe(candlesRequest)
 
 	go func() {
 		defer close(ws.Done)
@@ -50,17 +56,17 @@ func main() {
 				return
 			}
 
-			var binanceType binanceworker.BinanceCommon
-			err = json.Unmarshal(message, &binanceType)
+			var coinbaseType coinbasecollector.CoinbaseCommon
+			err = json.Unmarshal(message, &coinbaseType)
 			if err != nil {
 				return
 			}
 
-			switch binanceType.EventType {
-			case "24hrTicker":
-				kafkaProducer.Produce("binance_ticker", string(message))
-			case "kline":
-				kafkaProducer.Produce("binance_candlestick", string(message))
+			switch coinbaseType.Channel {
+			case "ticker":
+				kafkaProducer.Produce("coinbase_ticker", string(message))
+			case "candles":
+				kafkaProducer.Produce("coinbase_candles", string(message))
 			default:
 			}
 		}

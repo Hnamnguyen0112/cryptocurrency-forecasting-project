@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/config"
-	coinbaseworker "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/internal/coinbase_worker"
+	binancecollector "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/internal/binance_collector"
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/kafka"
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/websocket"
 )
@@ -23,8 +23,8 @@ func main() {
 
 	u := url.URL{
 		Scheme: "wss",
-		Host:   "advanced-trade-ws.coinbase.com",
-		Path:   "/",
+		Host:   "fstream.binance.com",
+		Path:   "/ws",
 	}
 	log.Printf("Connecting to %s", u.String())
 
@@ -34,19 +34,13 @@ func main() {
 	kafkaProducer := kafka.NewKafkaProducer(config.Config("KAFKA_BOOTSTRAP_SERVERS"), interrupt)
 	defer kafkaProducer.Close()
 
-	tickerRequest := map[string]interface{}{
-		"type":        "subscribe",
-		"product_ids": []string{"BTC-USDT"},
-		"channel":     "ticker",
+	request := map[string]interface{}{
+		"method": "SUBSCRIBE",
+		"params": []string{"btcusdt@ticker", "btcusdt@kline_1m"},
+		"id":     1,
 	}
-	ws.Subscribe(tickerRequest)
 
-	candlesRequest := map[string]interface{}{
-		"type":        "subscribe",
-		"product_ids": []string{"BTC-USDT"},
-		"channel":     "candles",
-	}
-	ws.Subscribe(candlesRequest)
+	ws.Subscribe(request)
 
 	go func() {
 		defer close(ws.Done)
@@ -56,17 +50,17 @@ func main() {
 				return
 			}
 
-			var coinbaseType coinbaseworker.CoinbaseCommon
-			err = json.Unmarshal(message, &coinbaseType)
+			var binanceType binancecollector.BinanceCommon
+			err = json.Unmarshal(message, &binanceType)
 			if err != nil {
 				return
 			}
 
-			switch coinbaseType.Channel {
-			case "ticker":
-				kafkaProducer.Produce("coinbase_ticker", string(message))
-			case "candles":
-				kafkaProducer.Produce("coinbase_candles", string(message))
+			switch binanceType.EventType {
+			case "24hrTicker":
+				kafkaProducer.Produce("binance_ticker", string(message))
+			case "kline":
+				kafkaProducer.Produce("binance_candlestick", string(message))
 			default:
 			}
 		}

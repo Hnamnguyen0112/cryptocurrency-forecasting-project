@@ -1,21 +1,20 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 
 go_library(
-    name = "coinbase_worker_lib",
+    name = "coinbase_collector_lib",
     srcs = ["main.go"],
-    importpath = "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/cmd/coinbase_worker",
+    importpath = "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/cmd/coinbase_collector",
     visibility = ["//visibility:private"],
     deps = [
         "//collector_ingestor/config",
-        "//collector_ingestor/internal/coinbase_worker",
-        "//collector_ingestor/pkg/database",
+        "//collector_ingestor/internal/coinbase_collector",
         "//collector_ingestor/pkg/kafka",
         "//collector_ingestor/pkg/websocket",
     ],
 )
 
 go_binary(
-    name = "coinbase_worker",
-    embed = [":coinbase_worker_lib"],
+    name = "coinbase_collector",
+    embed = [":coinbase_collector_lib"],
     visibility = ["//visibility:public"],
 )
