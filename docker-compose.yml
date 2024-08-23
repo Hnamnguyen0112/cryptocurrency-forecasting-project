@@ -1,27 +1,17 @@
 version: "3.8"
-name: cryptocurrency-forecasting-collector
+name: cryptocurrency-forecasting-infra 
 services:
-  binance_postgres_db:
+  postgres_db:
+    container_name: postgres_db
     image: postgres:16.2
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=secret
-      - POSTGRES_DB=binance
+      - POSTGRES_DB=forecasting
     ports:
       - "5433:5432"
     volumes:
-      - binance_data:/var/lib/postgresql/data
-  
-  coinbase_postgres_db:
-    image: postgres:16.2
-    environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=secret
-      - POSTGRES_DB=coinbase
-    ports:
-      - "5434:5432"
-    volumes:
-      - coinbase_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
 
   kafka-kraft:
     image: confluentinc/cp-kafka:7.7.0
@@ -44,7 +34,26 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
       CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk' 
 
+  schema-registry:
+    image: confluentinc/cp-schema-registry:7.7.0
+    hostname: schema-registry
+    container_name: schema-registry
+    ports:
+      - "8081:8081"
+    depends_on:
+      - kafka-kraft 
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka-kraft:29092
+      SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: PLAINTEXT
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_LISTENERS: 'http://schema-registry:8081'
+      SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "http"
+      SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: INFO
+      SCHEMA_REGISTRY_KAFKASTORE_TOPIC: _schemas
+      SCHEMA_REGISTRY_DEBUG: true
+
   kafka-ui:
+    container_name: kafka-ui
     depends_on:
       - kafka-kraft
     image: provectuslabs/kafka-ui:latest
@@ -54,6 +63,7 @@ services:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-kraft:29092
       KAFKA_CLUSTERS_0_METRICS_PORT: 9101
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry:8081
+
 volumes:
-  binance_data:
-  coinbase_data:
+  postgres_data:
