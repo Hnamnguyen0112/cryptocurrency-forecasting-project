@@ -15,11 +15,11 @@ func main() {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 
-	dbUser := config.Config("BINANCE_DB_USER")
-	dbPassword := config.Config("BINANCE_DB_PASSWORD")
-	dbHost := config.Config("BINANCE_DB_HOST")
-	dbPort := config.Config("BINANCE_DB_PORT")
-	dbName := config.Config("BINANCE_DB_NAME")
+	dbUser := config.Config("DB_USER")
+	dbPassword := config.Config("DB_PASSWORD")
+	dbHost := config.Config("DB_HOST")
+	dbPort := config.Config("DB_PORT")
+	dbName := config.Config("DB_NAME")
 
 	connectParams := database.ConnectParams{
 		Host:     dbHost,
@@ -42,7 +42,6 @@ func main() {
 		[]string{"binance_ticker", "binance_candlestick", "coinbase_ticker", "coinbase_candles"},
 		interrupt,
 	)
-
 	defer kafkaConsumer.Close()
 
 	go kafkaConsumer.Consume()
