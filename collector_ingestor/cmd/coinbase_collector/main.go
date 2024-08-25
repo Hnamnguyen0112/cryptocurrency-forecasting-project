@@ -71,6 +71,7 @@ func main() {
 
 				payload, err := scr.Serde.Serialize("coinbase_ticker", &coinbaseTicker)
 				if err != nil {
+					log.Printf("Error in serializing coinbase ticker: %v", err)
 					return
 				}
 
@@ -84,6 +85,7 @@ func main() {
 
 				payload, err := scr.Serde.Serialize("coinbase_candles", &coinbaseCandles)
 				if err != nil {
+					log.Printf("Error in serializing coinbase candles: %v", err)
 					return
 				}
 

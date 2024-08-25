@@ -65,6 +65,7 @@ func main() {
 
 				payload, err := scr.Serde.Serialize("binance_ticker", &binanceTicker)
 				if err != nil {
+					log.Printf("Error in serializing binance ticker: %v", err)
 					return
 				}
 
@@ -78,6 +79,7 @@ func main() {
 
 				payload, err := scr.Serde.Serialize("binance_candlestick", &binanceKline)
 				if err != nil {
+					log.Printf("Error in serializing binance candlestick: %v", err)
 					return
 				}
 
