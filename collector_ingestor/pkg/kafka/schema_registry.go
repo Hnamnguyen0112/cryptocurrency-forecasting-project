@@ -11,7 +11,8 @@ import (
 
 type SchemaRegistry struct {
 	Client schemaregistry.Client
-	Serde  *jsonschema.Serializer
+	Ser    *jsonschema.Serializer
+	Deser  *jsonschema.Deserializer
 }
 
 func NewSchemaRegistry(url string) *SchemaRegistry {
@@ -22,6 +23,11 @@ func NewSchemaRegistry(url string) *SchemaRegistry {
 	}
 
 	ser, err := jsonschema.NewSerializer(client, serde.ValueSerde, jsonschema.NewSerializerConfig())
+	deser, err := jsonschema.NewDeserializer(
+		client,
+		serde.ValueSerde,
+		jsonschema.NewDeserializerConfig(),
+	)
 
 	if err != nil {
 		log.Printf("Error creating schema registry serializer: %v\n", err)
@@ -30,6 +36,7 @@ func NewSchemaRegistry(url string) *SchemaRegistry {
 
 	return &SchemaRegistry{
 		Client: client,
-		Serde:  ser,
+		Ser:    ser,
+		Deser:  deser,
 	}
 }

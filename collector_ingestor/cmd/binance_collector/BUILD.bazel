@@ -7,8 +7,8 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//collector_ingestor/config",
-        "//collector_ingestor/internal/binance_collector",
         "//collector_ingestor/pkg/kafka",
+        "//collector_ingestor/pkg/response",
         "//collector_ingestor/pkg/websocket",
     ],
 )

@@ -1,0 +1,11 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "ingestor",
+    srcs = [
+        "service.go",
+        "transform.go",
+    ],
+    importpath = "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/internal/ingestor",
+    visibility = ["//collector_ingestor:__subpackages__"],
+)

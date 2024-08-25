@@ -9,8 +9,8 @@ import (
 	"syscall"
 
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/config"
-	coinbasecollector "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/internal/coinbase_collector"
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/kafka"
+	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/response"
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/websocket"
 )
 
@@ -52,41 +52,39 @@ func main() {
 		for {
 			_, message, err := ws.Conn.ReadMessage()
 			if err != nil {
-				return
+				log.Printf("Error in reading message: %v", err)
 			}
 
-			var coinbaseType coinbasecollector.CoinbaseCommon
+			var coinbaseType response.CoinbaseCommon
 			err = json.Unmarshal(message, &coinbaseType)
 			if err != nil {
-				return
+				log.Printf("Error in unmarshalling message: %v", err)
 			}
 
 			switch coinbaseType.Channel {
 			case "ticker":
-				var coinbaseTicker coinbasecollector.CoinbaseTicker
+				var coinbaseTicker response.CoinbaseTicker
 				err = json.Unmarshal(message, &coinbaseTicker)
 				if err != nil {
-					return
+					log.Printf("Error in unmarshalling coinbase ticker: %v", err)
 				}
 
-				payload, err := scr.Serde.Serialize("coinbase_ticker", &coinbaseTicker)
+				payload, err := scr.Ser.Serialize("coinbase_ticker", &coinbaseTicker)
 				if err != nil {
 					log.Printf("Error in serializing coinbase ticker: %v", err)
-					return
 				}
 
 				kafkaProducer.Produce("coinbase_ticker", payload)
 			case "candles":
-				var coinbaseCandles coinbasecollector.CoinbaseCandles
+				var coinbaseCandles response.CoinbaseCandles
 				err = json.Unmarshal(message, &coinbaseCandles)
 				if err != nil {
-					return
+					log.Printf("Error in unmarshalling coinbase candles: %v", err)
 				}
 
-				payload, err := scr.Serde.Serialize("coinbase_candles", &coinbaseCandles)
+				payload, err := scr.Ser.Serialize("coinbase_candles", &coinbaseCandles)
 				if err != nil {
 					log.Printf("Error in serializing coinbase candles: %v", err)
-					return
 				}
 
 				kafkaProducer.Produce("coinbase_candles", payload)

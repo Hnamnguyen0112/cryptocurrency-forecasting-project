@@ -1,4 +1,4 @@
-package coinbasecollector
+package response
 
 type CoinbaseCommon struct {
 	Channel     string          `json:"channel"`

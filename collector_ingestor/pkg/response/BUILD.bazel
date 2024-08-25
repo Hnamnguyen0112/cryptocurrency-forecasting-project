@@ -1,0 +1,11 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "response",
+    srcs = [
+        "binance.go",
+        "coinbase.go",
+    ],
+    importpath = "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/response",
+    visibility = ["//visibility:public"],
+)

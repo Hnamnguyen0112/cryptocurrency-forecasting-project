@@ -1,4 +1,4 @@
-package binancecollector
+package response
 
 type BinanceCommon struct {
 	EventType string `json:"e"`

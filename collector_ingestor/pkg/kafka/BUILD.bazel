@@ -5,8 +5,14 @@ go_library(
     srcs = [
         "consumer.go",
         "producer.go",
+        "schema_registry.go",
     ],
     importpath = "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/kafka",
     visibility = ["//visibility:public"],
-    deps = ["@com_github_confluentinc_confluent_kafka_go_v2//kafka"],
+    deps = [
+        "@com_github_confluentinc_confluent_kafka_go_v2//kafka",
+        "@com_github_confluentinc_confluent_kafka_go_v2//schemaregistry",
+        "@com_github_confluentinc_confluent_kafka_go_v2//schemaregistry/serde",
+        "@com_github_confluentinc_confluent_kafka_go_v2//schemaregistry/serde/jsonschema",
+    ],
 )

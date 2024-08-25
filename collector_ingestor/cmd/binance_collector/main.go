@@ -9,8 +9,8 @@ import (
 	"syscall"
 
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/config"
-	binancecollector "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/internal/binance_collector"
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/kafka"
+	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/response"
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/websocket"
 )
 
@@ -46,41 +46,41 @@ func main() {
 		for {
 			_, message, err := ws.Conn.ReadMessage()
 			if err != nil {
+				log.Printf("Error in reading message: %v", err)
 				return
 			}
 
-			var binanceType binancecollector.BinanceCommon
+			var binanceType response.BinanceCommon
 			err = json.Unmarshal(message, &binanceType)
 			if err != nil {
+				log.Printf("Error in unmarshalling message: %v", err)
 				return
 			}
 
 			switch binanceType.EventType {
 			case "24hrTicker":
-				var binanceTicker binancecollector.BinanceTicker
+				var binanceTicker response.BinanceTicker
 				err = json.Unmarshal(message, &binanceTicker)
 				if err != nil {
-					return
+					log.Printf("Error in unmarshalling binance ticker: %v", err)
 				}
 
-				payload, err := scr.Serde.Serialize("binance_ticker", &binanceTicker)
+				payload, err := scr.Ser.Serialize("binance_ticker", &binanceTicker)
 				if err != nil {
 					log.Printf("Error in serializing binance ticker: %v", err)
-					return
 				}
 
 				kafkaProducer.Produce("binance_ticker", payload)
 			case "kline":
-				var binanceKline binancecollector.BinanceCandlestick
+				var binanceKline response.BinanceCandlestick
 				err = json.Unmarshal(message, &binanceKline)
 				if err != nil {
-					return
+					log.Printf("Error in unmarshalling binance candlestick: %v", err)
 				}
 
-				payload, err := scr.Serde.Serialize("binance_candlestick", &binanceKline)
+				payload, err := scr.Ser.Serialize("binance_candlestick", &binanceKline)
 				if err != nil {
 					log.Printf("Error in serializing binance candlestick: %v", err)
-					return
 				}
 
 				kafkaProducer.Produce("binance_candlestick", payload)
