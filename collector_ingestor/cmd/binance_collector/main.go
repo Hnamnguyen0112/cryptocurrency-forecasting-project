@@ -31,6 +31,8 @@ func main() {
 	kafkaProducer := kafka.NewKafkaProducer(config.Config("KAFKA_BOOTSTRAP_SERVERS"), interrupt)
 	defer kafkaProducer.Close()
 
+	scr := kafka.NewSchemaRegistry(config.Config("SCHEMA_REGISTRY_URL"))
+
 	request := map[string]interface{}{
 		"method": "SUBSCRIBE",
 		"params": []string{"btcusdt@ticker", "btcusdt@kline_1m"},
@@ -55,9 +57,31 @@ func main() {
 
 			switch binanceType.EventType {
 			case "24hrTicker":
-				kafkaProducer.Produce("binance_ticker", string(message))
+				var binanceTicker binancecollector.BinanceTicker
+				err = json.Unmarshal(message, &binanceTicker)
+				if err != nil {
+					return
+				}
+
+				payload, err := scr.Serde.Serialize("binance_ticker", &binanceTicker)
+				if err != nil {
+					return
+				}
+
+				kafkaProducer.Produce("binance_ticker", payload)
 			case "kline":
-				kafkaProducer.Produce("binance_candlestick", string(message))
+				var binanceKline binancecollector.BinanceCandlestick
+				err = json.Unmarshal(message, &binanceKline)
+				if err != nil {
+					return
+				}
+
+				payload, err := scr.Serde.Serialize("binance_candlestick", &binanceKline)
+				if err != nil {
+					return
+				}
+
+				kafkaProducer.Produce("binance_candlestick", payload)
 			default:
 			}
 		}

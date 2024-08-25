@@ -31,6 +31,8 @@ func main() {
 	kafkaProducer := kafka.NewKafkaProducer(config.Config("KAFKA_BOOTSTRAP_SERVERS"), interrupt)
 	defer kafkaProducer.Close()
 
+	scr := kafka.NewSchemaRegistry(config.Config("SCHEMA_REGISTRY_URL"))
+
 	tickerRequest := map[string]interface{}{
 		"type":        "subscribe",
 		"product_ids": []string{"BTC-USDT"},
@@ -61,9 +63,31 @@ func main() {
 
 			switch coinbaseType.Channel {
 			case "ticker":
-				kafkaProducer.Produce("coinbase_ticker", string(message))
+				var coinbaseTicker coinbasecollector.CoinbaseTicker
+				err = json.Unmarshal(message, &coinbaseTicker)
+				if err != nil {
+					return
+				}
+
+				payload, err := scr.Serde.Serialize("coinbase_ticker", &coinbaseTicker)
+				if err != nil {
+					return
+				}
+
+				kafkaProducer.Produce("coinbase_ticker", payload)
 			case "candles":
-				kafkaProducer.Produce("coinbase_candles", string(message))
+				var coinbaseCandles coinbasecollector.CoinbaseCandles
+				err = json.Unmarshal(message, &coinbaseCandles)
+				if err != nil {
+					return
+				}
+
+				payload, err := scr.Serde.Serialize("coinbase_candles", &coinbaseCandles)
+				if err != nil {
+					return
+				}
+
+				kafkaProducer.Produce("coinbase_candles", payload)
 			default:
 			}
 		}

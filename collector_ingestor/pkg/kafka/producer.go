@@ -15,7 +15,8 @@ type KafkaProducer struct {
 func NewKafkaProducer(address string, interrupt chan os.Signal) *KafkaProducer {
 	p, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": address})
 	if err != nil {
-		panic(err)
+		log.Printf("Failed to create producer: %s\n", err)
+		os.Exit(1)
 	}
 
 	return &KafkaProducer{
@@ -24,17 +25,16 @@ func NewKafkaProducer(address string, interrupt chan os.Signal) *KafkaProducer {
 	}
 }
 
-func (kp *KafkaProducer) Produce(topic string, message string) error {
+// value is serialized to avro format
+func (kp *KafkaProducer) Produce(topic string, value []byte) {
 	err := kp.Producer.Produce(&kafka.Message{
 		TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-		Value:          []byte(message),
+		Value:          value,
 	}, nil)
 
 	if err != nil {
-		return err
+		log.Printf("Failed to produce message: %v", err)
 	}
-
-	return nil
 }
 
 func (kp *KafkaProducer) HandleInterrupt() {

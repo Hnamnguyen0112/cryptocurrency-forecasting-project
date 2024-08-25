@@ -1,35 +1,35 @@
 package kafka
 
 import (
-	"fmt"
+	"log"
 	"os"
 
 	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry"
 	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry/serde"
-	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry/serde/avro"
+	"github.com/confluentinc/confluent-kafka-go/v2/schemaregistry/serde/jsonschema"
 )
 
 type SchemaRegistry struct {
-	client schemaregistry.Client
-	serde  *avro.SpecificSerializer
+	Client schemaregistry.Client
+	Serde  *jsonschema.Serializer
 }
 
 func NewSchemaRegistry(url string) *SchemaRegistry {
 	client, err := schemaregistry.NewClient(schemaregistry.NewConfig(url))
 	if err != nil {
-		fmt.Printf("Failed to create client: %s\n", err)
+		log.Printf("Error creating schema registry client: %v\n", err)
 		os.Exit(1)
 	}
 
-	ser, err := avro.NewSpecificSerializer(client, serde.ValueSerde, avro.NewSerializerConfig())
+	ser, err := jsonschema.NewSerializer(client, serde.ValueSerde, jsonschema.NewSerializerConfig())
 
 	if err != nil {
-		fmt.Printf("Failed to create serializer: %s\n", err)
+		log.Printf("Error creating schema registry serializer: %v\n", err)
 		os.Exit(1)
 	}
 
 	return &SchemaRegistry{
-		client: client,
-		serde:  ser,
+		Client: client,
+		Serde:  ser,
 	}
 }

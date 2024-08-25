@@ -17,6 +17,7 @@ func Connect(u string, interrupt chan os.Signal) *Websocket {
 	c, _, err := websocket.DefaultDialer.Dial(u, nil)
 	if err != nil {
 		log.Fatal("Dial error:", err)
+		os.Exit(1)
 	}
 
 	return &Websocket{
@@ -43,7 +44,10 @@ func (ws *Websocket) HandleInterrupt() {
 			log.Println("Interrupt received, websocket closing connection ...")
 
 			// Cleanly close the connection
-			err := ws.Conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+			err := ws.Conn.WriteMessage(
+				websocket.CloseMessage,
+				websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""),
+			)
 			if err != nil {
 				log.Println("Close message error:", err)
 				return

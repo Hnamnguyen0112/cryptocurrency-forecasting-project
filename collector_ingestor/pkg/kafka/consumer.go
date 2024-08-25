@@ -25,7 +25,8 @@ func NewKafkaConsumer(
 	})
 
 	if err != nil {
-		panic(err)
+		log.Printf("Failed to create consumer: %s\n", err)
+		os.Exit(1)
 	}
 
 	c.SubscribeTopics(topics, nil)
