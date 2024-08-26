@@ -53,17 +53,19 @@ func main() {
 			_, message, err := ws.Conn.ReadMessage()
 			if err != nil {
 				log.Printf("Error in reading message: %v", err)
+				return
 			}
 
 			var coinbaseType response.CoinbaseCommon
 			err = json.Unmarshal(message, &coinbaseType)
 			if err != nil {
 				log.Printf("Error in unmarshalling message: %v", err)
+				return
 			}
 
 			switch coinbaseType.Channel {
 			case "ticker":
-				var coinbaseTicker response.CoinbaseTicker
+				var coinbaseTicker response.CoinbaseCommon
 				err = json.Unmarshal(message, &coinbaseTicker)
 				if err != nil {
 					log.Printf("Error in unmarshalling coinbase ticker: %v", err)
@@ -76,7 +78,7 @@ func main() {
 
 				kafkaProducer.Produce("coinbase_ticker", payload)
 			case "candles":
-				var coinbaseCandles response.CoinbaseCandles
+				var coinbaseCandles response.CoinbaseCommon
 				err = json.Unmarshal(message, &coinbaseCandles)
 				if err != nil {
 					log.Printf("Error in unmarshalling coinbase candles: %v", err)

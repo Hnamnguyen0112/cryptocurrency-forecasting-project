@@ -11,7 +11,7 @@ type CoinbaseCommon struct {
 type CoinbaseEvent struct {
 	Type    string            `json:"type"`
 	Candles []CoinbaseCandles `json:"candles"`
-	Ticker  []CoinbaseTicker  `json:"ticker"`
+	Tickers []CoinbaseTicker  `json:"tickers"`
 }
 
 type CoinbaseTicker struct {
@@ -21,8 +21,8 @@ type CoinbaseTicker struct {
 	Volume24H             string `json:"volume_24_h"`
 	Low24H                string `json:"low_24_h"`
 	High24H               string `json:"high_24_h"`
-	Low24W                string `json:"low_24_w"`
-	High24W               string `json:"high_24_w"`
+	Low52W                string `json:"low_52_w"`
+	High52W               string `json:"high_52_w"`
 	PricePercentChange24H string `json:"price_percent_chg_24_h"`
 	BestBid               string `json:"best_bid"`
 	BestBidQuantity       string `json:"best_bid_quantity"`

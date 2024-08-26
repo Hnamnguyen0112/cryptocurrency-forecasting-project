@@ -7,10 +7,10 @@ import (
 	"syscall"
 
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/config"
+	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/internal/ingestor"
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/database"
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/entities"
 	kafkaPkg "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/kafka"
-	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/response"
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 )
 
@@ -37,6 +37,8 @@ func main() {
 	database.DB.AutoMigrate(
 		&entities.BinanceTicker{},
 		&entities.BinanceCandlestick{},
+		&entities.CoinbaseTicker{},
+		&entities.CoinbaseCandle{},
 	)
 
 	kafkaConsumer := kafkaPkg.NewKafkaConsumer(
@@ -65,33 +67,9 @@ func main() {
 
 			switch e := ev.(type) {
 			case *kafka.Message:
-				switch *e.TopicPartition.Topic {
-				case "binance_ticker":
-					value := response.BinanceTicker{}
-					err := scr.Deser.DeserializeInto(*e.TopicPartition.Topic, e.Value, &value)
-					if err != nil {
-						log.Printf("Error deserializing binance ticker: %v\n", err)
-					}
-				case "binance_candlestick":
-					value := response.BinanceCandlestick{}
-					err := scr.Deser.DeserializeInto(*e.TopicPartition.Topic, e.Value, &value)
-					if err != nil {
-						log.Printf("Error deserializing binance candlestick: %v\n", err)
-					}
-				case "coinbase_ticker":
-					value := response.CoinbaseTicker{}
-					err := scr.Deser.DeserializeInto(*e.TopicPartition.Topic, e.Value, &value)
-					if err != nil {
-						log.Printf("Error deserializing coinbase ticker: %v\n", err)
-					}
-				case "coinbase_candles":
-					value := response.CoinbaseCandles{}
-					err := scr.Deser.DeserializeInto(*e.TopicPartition.Topic, e.Value, &value)
-					if err != nil {
-						log.Printf("Error deserializing coinbase candles: %v\n", err)
-					}
-				default:
-				}
+				go func(e *kafka.Message) {
+					ingestor.HandleMessage(e, scr)
+				}(e)
 			case kafka.Error:
 				log.Printf("Error: %v\n", e)
 			default:
