@@ -7,10 +7,10 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//collector_ingestor/config",
+        "//collector_ingestor/internal/ingestor",
         "//collector_ingestor/pkg/database",
         "//collector_ingestor/pkg/entities",
         "//collector_ingestor/pkg/kafka",
-        "//collector_ingestor/pkg/response",
         "@com_github_confluentinc_confluent_kafka_go_v2//kafka",
     ],
 )

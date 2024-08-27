@@ -8,4 +8,11 @@ go_library(
     ],
     importpath = "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/internal/ingestor",
     visibility = ["//collector_ingestor:__subpackages__"],
+    deps = [
+        "//collector_ingestor/pkg/database",
+        "//collector_ingestor/pkg/entities",
+        "//collector_ingestor/pkg/kafka",
+        "//collector_ingestor/pkg/response",
+        "@com_github_confluentinc_confluent_kafka_go_v2//kafka",
+    ],
 )

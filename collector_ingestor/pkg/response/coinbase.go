@@ -9,9 +9,9 @@ type CoinbaseCommon struct {
 }
 
 type CoinbaseEvent struct {
-	Type    string            `json:"type"`
-	Candles []CoinbaseCandles `json:"candles"`
-	Tickers []CoinbaseTicker  `json:"tickers"`
+	Type    string           `json:"type"`
+	Candles []CoinbaseCandle `json:"candles"`
+	Tickers []CoinbaseTicker `json:"tickers"`
 }
 
 type CoinbaseTicker struct {
@@ -30,7 +30,7 @@ type CoinbaseTicker struct {
 	BestAskQuantity       string `json:"best_ask_quantity"`
 }
 
-type CoinbaseCandles struct {
+type CoinbaseCandle struct {
 	Start     string `json:"start"`
 	High      string `json:"high"`
 	Low       string `json:"low"`

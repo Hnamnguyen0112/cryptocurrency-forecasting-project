@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "binance_candlestick.go",
         "binance_ticker.go",
+        "coinbase_candle.go",
         "coinbase_ticker.go",
     ],
     importpath = "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/entities",
