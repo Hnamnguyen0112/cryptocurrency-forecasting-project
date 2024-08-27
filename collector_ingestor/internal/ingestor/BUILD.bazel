@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "ingestor",
@@ -14,5 +14,15 @@ go_library(
         "//collector_ingestor/pkg/kafka",
         "//collector_ingestor/pkg/response",
         "@com_github_confluentinc_confluent_kafka_go_v2//kafka",
+    ],
+)
+
+go_test(
+    name = "ingestor_test",
+    srcs = ["transform_test.go"],
+    embed = [":ingestor"],
+    deps = [
+        "//collector_ingestor/pkg/entities",
+        "//collector_ingestor/pkg/response",
     ],
 )
