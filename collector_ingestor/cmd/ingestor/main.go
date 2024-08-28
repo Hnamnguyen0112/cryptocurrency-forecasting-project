@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -12,6 +13,7 @@ import (
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/entities"
 	kafkaPkg "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/kafka"
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
+	"gorm.io/driver/postgres"
 )
 
 func main() {
@@ -24,17 +26,26 @@ func main() {
 	dbPort := config.Config("DB_PORT")
 	dbName := config.Config("DB_NAME")
 
-	connectParams := database.ConnectParams{
-		Host:     dbHost,
-		Port:     dbPort,
-		User:     dbUser,
-		Password: dbPassword,
-		Name:     dbName,
+	dsn := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Shanghai",
+		dbHost,
+		dbUser,
+		dbPassword,
+		dbName,
+		dbPort,
+	)
+
+	dialector := postgres.New(postgres.Config{
+		DSN: dsn,
+	})
+
+	DB, err := database.Connect(dialector)
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
+		os.Exit(1)
 	}
 
-	database.Connect(connectParams)
-
-	database.DB.AutoMigrate(
+	DB.AutoMigrate(
 		&entities.BinanceTicker{},
 		&entities.BinanceCandlestick{},
 		&entities.CoinbaseTicker{},

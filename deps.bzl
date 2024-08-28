@@ -57,6 +57,12 @@ def go_dependencies():
         version = "v1.1.9",
     )
     go_repository(
+        name = "com_github_data_dog_go_sqlmock",
+        importpath = "github.com/DATA-DOG/go-sqlmock",
+        sum = "h1:OcvFkGmslmlZibjAjaHm3L//6LiuBgolP7OputlJIzU=",
+        version = "v1.5.2",
+    )
+    go_repository(
         name = "com_github_davecgh_go_spew",
         importpath = "github.com/davecgh/go-spew",
         sum = "h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=",
@@ -187,6 +193,12 @@ def go_dependencies():
         importpath = "github.com/josharian/intern",
         sum = "h1:vlS4z54oSdjm0bgjRigI+G1HpF+tI+9rE5LLzOg8HmY=",
         version = "v1.0.0",
+    )
+    go_repository(
+        name = "com_github_kisielk_sqlstruct",
+        importpath = "github.com/kisielk/sqlstruct",
+        sum = "h1:veS9QfglfvqAw2e+eeNT/SbGySq8ajECXJ9e4fPoLhY=",
+        version = "v0.0.0-20201105191214-5f3e10d3ab46",
     )
     go_repository(
         name = "com_github_kr_pretty",

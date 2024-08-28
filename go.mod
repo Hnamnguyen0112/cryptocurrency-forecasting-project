@@ -3,6 +3,7 @@ module github.com/Hnamnguyen0112/cryptocurrency-forecasting-project
 go 1.22
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/confluentinc/confluent-kafka-go/v2 v2.3.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/joho/godotenv v1.5.1

@@ -12,6 +12,7 @@ go_library(
         "//collector_ingestor/pkg/entities",
         "//collector_ingestor/pkg/kafka",
         "@com_github_confluentinc_confluent_kafka_go_v2//kafka",
+        "@io_gorm_driver_postgres//:postgres",
     ],
 )
 
