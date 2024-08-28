@@ -6,8 +6,15 @@ import (
 	"os"
 )
 
+type WebsocketConn interface {
+	WriteJSON(v interface{}) error
+	WriteMessage(messageType int, data []byte) error
+	ReadMessage() (messageType int, p []byte, err error)
+	Close() error
+}
+
 type Websocket struct {
-	Conn          *websocket.Conn
+	Conn          WebsocketConn
 	Done          chan struct{}
 	Interrupt     chan os.Signal
 	TotalChannels int
