@@ -53,6 +53,18 @@ bazel run //:gazelle-update-repos
 bazel build //...
 ```
 
+Note:
+
+```bash
+go_repository(
+    name = "com_github_confluentinc_confluent_kafka_go_v2",
+    importpath = "github.com/confluentinc/confluent-kafka-go/v2",
+    patches = ["//bazel:kafka.patch"],
+    sum = "h1:icCHutJouWlQREayFwCc7lxDAhws08td+W3/gdqgZts=",
+    version = "v2.3.0",
+)
+```
+
 4. Run the collector service:
 
 ```bash

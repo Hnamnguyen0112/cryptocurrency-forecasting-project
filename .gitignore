@@ -19,3 +19,4 @@
 # Ignore jekyll build output.
 /production
 /.sass-cache
+/tmp
