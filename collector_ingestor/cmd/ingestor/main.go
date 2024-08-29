@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/config"
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/internal/ingestor"
+	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/config"
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/database"
 	"github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/entities"
 	kafkaPkg "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/pkg/kafka"

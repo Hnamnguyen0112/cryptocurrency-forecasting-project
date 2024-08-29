@@ -6,7 +6,7 @@ go_library(
     importpath = "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/cmd/binance_collector",
     visibility = ["//visibility:private"],
     deps = [
-        "//collector_ingestor/config",
+        "//collector_ingestor/pkg/config",
         "//collector_ingestor/pkg/kafka",
         "//collector_ingestor/pkg/response",
         "//collector_ingestor/pkg/websocket",

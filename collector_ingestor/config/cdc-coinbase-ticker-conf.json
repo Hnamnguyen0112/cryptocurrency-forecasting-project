@@ -1,0 +1,25 @@
+{
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "database.dbname": "forecasting",
+    "database.history.kafka.bootstrap.servers": "kafka-kraft:29092",
+    "database.history.kafka.topic": "schema_changes.coinbase_ticker",
+    "database.hostname": "postgres_db",
+    "database.password": "secret",
+    "database.port": "5432",
+    "database.server.name": "coinbase_tickers",
+    "database.user": "root",
+    "name": "coinbase-tickers-db-connector",
+    "plugin.name": "pgoutput",
+    "table.include.list": "public.coinbase_tickers",
+    "tasks.max": "1",
+    "topic.creation.default.cleanup.policy": "delete",
+    "topic.creation.default.partitions": "1",
+    "topic.creation.default.replication.factor": "1",
+    "topic.creation.default.retention.ms": "604800000",
+    "topic.creation.enable": "true",
+    "topic.prefix": "postgres",
+    "slot.name": "coinbase_tickers"
+  },
+  "name": "coinbase-tickers-db-connector"
+}

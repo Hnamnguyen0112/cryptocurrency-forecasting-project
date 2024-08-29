@@ -6,8 +6,8 @@ go_library(
     importpath = "github.com/Hnamnguyen0112/cryptocurrency-forecasting-project/collector_ingestor/cmd/ingestor",
     visibility = ["//visibility:private"],
     deps = [
-        "//collector_ingestor/config",
         "//collector_ingestor/internal/ingestor",
+        "//collector_ingestor/pkg/config",
         "//collector_ingestor/pkg/database",
         "//collector_ingestor/pkg/entities",
         "//collector_ingestor/pkg/kafka",
