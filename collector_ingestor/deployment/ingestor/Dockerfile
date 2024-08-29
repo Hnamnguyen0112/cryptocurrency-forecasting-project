@@ -1,4 +1,4 @@
-FROM golang:1.22
+FROM golang:1.22 as builder
 
 # Set the Current Working Directory inside the container
 WORKDIR /usr/src/app
@@ -41,6 +41,12 @@ RUN echo "DB_PORT=$DB_PORT" >> ./collector_ingestor/.env
 RUN echo "DB_NAME=$DB_NAME" >> ./collector_ingestor/.env
 
 # Build the Go app
-RUN go build -v -o /usr/local/bin/app ./collector_ingestor/cmd/ingestor/main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o /usr/local/bin/app ./collector_ingestor/cmd/ingestor/main.go
+
+FROM alpine:3.14
+
+RUN apk add --no-cache ca-certificates
+
+COPY --from=builder /usr/local/bin/app /usr/local/bin/app
 
 CMD ["app"]

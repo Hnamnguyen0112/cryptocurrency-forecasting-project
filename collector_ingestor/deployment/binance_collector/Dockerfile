@@ -25,6 +25,12 @@ RUN echo "KAFKA_BOOTSTRAP_SERVERS=$KAFKA_BOOTSTRAP_SERVERS" >> ./collector_inges
 RUN echo "SCHEMA_REGISTRY_URL=$SCHEMA_REGISTRY_URL" >> ./collector_ingestor/.env
 
 # Build the Go app
-RUN go build -v -o /usr/local/bin/app ./collector_ingestor/cmd/binance_collector/main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o /usr/local/bin/app ./collector_ingestor/cmd/ingestor/main.go
+
+FROM alpine:3.14
+
+RUN apk add --no-cache ca-certificates
+
+COPY --from=builder /usr/local/bin/app /usr/local/bin/app
 
 CMD ["app"]
